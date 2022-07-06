@@ -455,8 +455,12 @@ def ipsc_violin_plot(i):
 
 def lobule_plot(e,i):
     cm = 1/2.54
-    epsc_data = e.loc[e.confirmed == 'y']
-    ipsc_data = i.loc[i.confirmed == 'y']
+    #epsc_data = e.loc[e.confirmed == 'y']
+    #ipsc_data = i.loc[i.confirmed == 'y']
+    e.dropna()
+    i.dropna()
+    epsc_data = e
+    ipsc_data = i
     lobules = [0,1,2]
     
     fig, ax = plt.subplots(2,4, figsize = ((18.3*cm), 3))
@@ -508,16 +512,19 @@ def lobule_plot(e,i):
 #needs all event data, so not meaned
 def distribution(epsc_data, ipsc_data):
     cm = 1/2.54
-    
-    fig, ax = plt.subplots(2,3, figsize=(9.15*cm,3))
     vars = ['amplitude','rise','tau']
+    
+    for v in vars:
+        epsc_data_norm =  (epsc_data[v] - epsc_data[v].min()) / (epsc_data[v].max() - epsc_data[v].min()) 
+        ipsc_data_norm =  (ipsc_data[v] - ipsc_data[v].min()) / (ipsc_data[v].max() - ipsc_data[v].min())
+        
+    fig, ax = plt.subplots(2,3, figsize=(9.15*cm,3))
+
     for i,v in enumerate(vars):
         sns.kdeplot(data=ipsc_data,x=v,ax=ax[1,i], hue='Zebrin', hue_order=['pos','neg'], 
-                    fill=True, multiple='stack')
+                    fill=False, multiple='layer')
         sns.kdeplot(data=epsc_data,x=v,ax=ax[0,i], hue='Zebrin', hue_order=['pos','neg'],  
-                    fill=True, multiple='stack')
-        
-
+                    fill=False, multiple='layer')
         
     for a in ax.flatten():
         a.spines['top'].set_visible(False)
@@ -526,16 +533,15 @@ def distribution(epsc_data, ipsc_data):
         a.set_ylabel(' ')
         a.set_yticklabels([' '])
         a.tick_params(axis='y',which='both',bottom=True,top=False,labelbottom=True, left=False)
-
     
     for i in range(3):
         ax[0,i].set_xlabel(' ')
+    ax[0,0].set_xlabel(' ')
+    ax[0,1].set_xlabel(' ')
+    ax[0,2].set_xlabel(' ')
     ax[1,0].set_xlabel('Amplitude (pA)')
     ax[1,1].set_xlabel('Rise (ms)')
     ax[1,2].set_xlabel('Tau (ms)')
-    ax[0,0].set_xlabel('Amplitude (pA)')
-    ax[0,1].set_xlabel('Rise (ms)')
-    ax[0,2].set_xlabel('Tau (ms)')
     
     ax[0,0].set_ylabel('Density')
     ax[1,0].set_ylabel('Density')
@@ -583,7 +589,7 @@ if __name__ == "__main__":
     base_folder = "//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data"
     output_loc = os.path.join(base_folder, "Analysis_tools/output/")
     plt.style.use('seaborn-paper')
-    color = ["#5BE12D","#D24646"]
+    color = ["#5BE12D","#EC008C"] #Original green/red
     sns.set_palette(sns.color_palette(color))
     plt.rcParams['font.sans-serif'] = 'Arial'
     plt.rcParams['font.family'] = 'sans-serif'
