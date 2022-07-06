@@ -99,7 +99,7 @@ class process_single_cell(object):
         for i, v in enumerate(["EPSC1_amplitude", "EPSC2_amplitude",
                                "r_cap", "r_membrane", "PPR", "holding"]):
             output_data.loc[:, "norm_"+v] = (output_data.loc[:, v] /
-                                            np.mean(output_data.loc[(output_data.time > -5) & (output_data.time < 0), v]))
+                                            np.mean(output_data.loc[(output_data.time > -6) & (output_data.time < 1), v]))
             #print(np.mean(output_data.loc[(output_data.time > -10) & (output_data.time < 0), v]))
         return output_data
     
@@ -161,8 +161,8 @@ def overview_graph(data, output_loc):
             ax[i,0].set_ylabel(labels[v])
 
             ax[i,1].scatter(d.time, d["norm_"+v], s=4)
-            ax[i,1].axhline(0.8, lw=0.7,ls='--')
-            ax[i,1].axhline(1.2, lw=0.7,ls='--')
+            ax[i,1].axhline(0.75, lw=0.7,ls='--')
+            ax[i,1].axhline(1.25, lw=0.7,ls='--')
             ax[i,1].axvline(25, lw=0.3, color="black")
             ax[i,1].axvline(-5, lw=0.3, color="black")
             ax[i,1].axvline(0, lw=0.3, color="black")
@@ -220,7 +220,7 @@ def LTP_plot(data):
     post_neg = data.loc[(data.group == "neg") & (data.time >0) & (data.time < 36)]
     post_pos = data.loc[(data.group == "pos") & (data.time >0) & (data.time < 36)]
     post_neg.loc[:,'time'] = post_neg.time + 0.5
-    fig, ax = plt.subplots(1,1, figsize=(0.75*(13.5*cm),3),dpi=100)
+    fig, ax = plt.subplots(1,1, figsize=(0.75*(13.6*cm),3))
     
     pre_data = pre_neg.append(pre_pos)
     post_data = post_neg.append(post_pos)
@@ -258,7 +258,7 @@ def LTP_plot(data):
     ax.tick_params(axis='y',which='both',left=True,right=False,labelbottom=True)
     
     fig.tight_layout()
-    fig.savefig(os.path.join(output_loc, 'ltd_plot.pdf'),dpi=100)
+    fig.savefig(os.path.join(output_loc, 'LTD_final.pdf'))
     return fig, ax
 
 
@@ -313,8 +313,8 @@ def flocculus_plot(data):
 def test_plot(data):
     data = data.loc[data.norm_PPR < 5] #removes one very unlikely outlier that ruins the figure 
     cm = 1/2.54
-    pre_neg = data.loc[(data.group == "neg") & (data.time < 0) & (data.time > -6)]
-    pre_pos = data.loc[(data.group == "pos") & (data.time < 0) & (data.time > -6)]
+    pre_neg = data.loc[(data.group == "neg") & (data.time < 0) & (data.time > -11)]
+    pre_pos = data.loc[(data.group == "pos") & (data.time < 0) & (data.time > -11)]
     pre_neg.loc[:,'time'] = pre_neg.time + 0.5
     
     post_neg = data.loc[(data.group == "neg") & (data.time >0) & (data.time < 36)]
@@ -445,8 +445,8 @@ def domain_plot(data):
     neg_data = data.loc[(data.domain == 2) & (data.group == 'neg')]
     pos_data = data.loc[(data.domain == 0) & (data.group == 'pos')]
     plot_data = neg_data.append(pos_data)
-    pre_data = plot_data.loc[(plot_data.time < 0) & (plot_data.time > -11)]
-    post_data = plot_data.loc[(plot_data.time >  0) & (plot_data.time < 36)]
+    pre_data = plot_data.loc[(plot_data.time < 1) & (plot_data.time > -11)]
+    post_data = plot_data.loc[(plot_data.time >  1) & (plot_data.time < 36)]
     
     fig, ax = plt.subplots(1,1, figsize=(18.3*cm,4), dpi = 300)
     sns.lineplot(x='time',y='norm_EPSC1_amplitude', hue='group', data=pre_data,ax=ax, err_style="bars", ci=95,style='group',
@@ -472,83 +472,88 @@ def domain_plot(data):
     fig.savefig(os.path.join(output_loc, 'regionmatch_plot.png'),dpi = 1000)
     return fig, ax
 
-def extended_data_fig(data, output_loc):
+def extended_data_fig(data, pair_data, output_loc):
     all_data = data.loc[(data.time > 19) & (data.time < 26)] #Data for general graph, not necessary to have loc
     all_data = all_data.groupby(['group','cell','pre_post']).mean().reset_index()
-    plot_data = data
-    #plot_data = data.loc[data.confirmed == 'y'] #Make sure we have data that actually has a cell loc
-    plot_data = plot_data.loc[(plot_data.time > 19) & (plot_data.time < 26)] #All data from 20-25 minutes ('long term')
-    plot_data = plot_data.groupby(['group','cell','pre_post']).mean().reset_index()
-    
+    pair_data = pair_data.loc[(pair_data.time > 19) & (pair_data.time <26)]
+    pair_data = pair_data.groupby(['group','cell','pre_post','lobule']).mean().reset_index()
+    pair_data = pair_data.sort_values(by='group', ascending=False)
+    palette1 = sns.color_palette('husl', 5, 0.7)
     cm=1/2.54
-    fig, ax = plt.subplots(1,2, dpi=300, figsize=(0.3*(18.3*cm),3),gridspec_kw={'width_ratios': [1, 2]})
+    fig, ax = plt.subplots(1,2, dpi=300, figsize=(0.3*(18.3*cm),3))
     sns.boxplot(data=all_data, x='group', y='norm_EPSC1_amplitude', fliersize=0, ax=ax[0], order=['pos','neg'], linewidth=0.5)
-    sns.boxplot(data=plot_data, x='domain', y='norm_EPSC1_amplitude', hue='group', fliersize=0, ax=ax[1], 
-                hue_order=['pos','neg'], linewidth=0.5)
     sns.stripplot(data=all_data, x='group', y='norm_EPSC1_amplitude', ax=ax[0], order=['pos','neg'], size=4, hue='group',
                   hue_order=['pos','neg'], jitter=0.05, marker='^', edgecolor='black', color='white', linewidth=0.5)
-    sns.stripplot(data=plot_data, x='domain', y='norm_EPSC1_amplitude', ax=ax[1], hue='group', dodge=True, size=4,
-                  hue_order=['pos','neg'], jitter=0.05, marker='^', edgecolor='black', color='white', linewidth=0.5)
+    
+    sns.lineplot(data=pair_data, x='group', y='norm_EPSC1_amplitude', hue='lobule', ax=ax[1], ci =None, palette=palette1,
+                 sort=False)
+    sns.swarmplot(data=pair_data, x='group', y='norm_EPSC1_amplitude', hue='lobule', ax=ax[1], edgecolor='black', linewidth=0.5,
+                  palette=palette1, order=['pos','neg'])
+    
+    
+    # sns.boxplot(data=plot_data, x='domain', y='norm_EPSC1_amplitude', hue='group', fliersize=0, ax=ax[1], 
+    #             hue_order=['pos','neg'], linewidth=0.5)
+    # sns.stripplot(data=plot_data, x='domain', y='norm_EPSC1_amplitude', ax=ax[1], hue='group', dodge=True, size=4,
+    #               hue_order=['pos','neg'], jitter=0.05, marker='^', edgecolor='black', color='white', linewidth=0.5)
     
     for a in ax.flatten():
         a.spines['top'].set_visible(False)
         a.spines['right'].set_visible(False)
-        a.set_ylabel('EPSC (%) (t=20-25 min)')
-        a.set_ylim(0.4, 2.0)
-        a.set_yticks([0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0])
-        a.set_yticklabels([40,60,80,100,120,140,160,180,200])
-        
+        a.set_ylim(0.4, 1.2)
+        a.set_yticks([0.4,0.6,0.8,1.0,1.2])
+        a.set_yticklabels([40,60,80,100,120])
+    ax[0].set_ylabel('EPSC (%) (t=20-25 min)')
+    ax[1].set_ylabel(' ')
     ax[0].legend().set_visible(False)
     ax[1].legend().set_visible(False)
     ax[0].set_xticklabels(['+','-'])
-    ax[1].set_xticklabels(['AZ','CZ','PZ/NZ'])
+    ax[1].set_xticklabels(['+','-'])
     ax[0].set_xlabel('EAAT4')
-    ax[1].set_xlabel('Zone')
+    ax[1].set_xlabel('EAAT4')
 
     fig.tight_layout()
     fig.savefig(os.path.join(output_loc, "extendedLTDdata.pdf"), dpi = 300)
     return fig, ax
 
-def extended_data_flocculus(data, output_loc):
-    all_data = data.loc[(data.time > 19) & (data.time < 26)] #Data for general graph, not necessary to have loc
-    all_data = all_data.groupby(['group','cell','pre_post']).mean().reset_index()
-    plot_data = data
-    plot_data = plot_data.loc[(plot_data.time > 19) & (plot_data.time < 26)] #All data from 20-25 minutes ('long term')
-    plot_data = plot_data.groupby(['group','cell','pre_post']).mean().reset_index()
-    #plot_data2 = plot_data.loc[plot_data.group =! 'flocculus']
-    cm=1/2.54
-    fig, ax = plt.subplots(1,2, dpi=300, figsize=(9.15*cm,3))
-    sns.boxplot(data=all_data, x='group', y='norm_EPSC1_amplitude', fliersize=0, ax=ax[0], order=['pos','neg','flocculus'])
-    sns.boxplot(data=plot_data, x='domain', y='norm_EPSC1_amplitude', hue='group', fliersize=0, ax=ax[1], 
-                hue_order=['pos','neg','flocculus'])
-    sns.stripplot(data=all_data, x='group', y='norm_EPSC1_amplitude', ax=ax[0], order=['pos','neg','flocculus'], color='black',
-                  jitter=0.05, marker='^')
-    sns.stripplot(data=plot_data, x='domain', y='norm_EPSC1_amplitude', hue='group', ax=ax[1], dodge=True, fliersize=0,
-                  hue_order=['pos','neg','flocculus'], color='black', jitter=0.05, marker='^')
+
+def paired_plot(data, PT_data):
+    data = data.loc[(data.time > 19) & (data.time < 26)] #Data for general graph, not necessary to have loc
+    data = data.groupby(['group','cell','pre_post']).mean().reset_index()
     
+    PT_data = PT_data.loc[(PT_data.time > 19) & (PT_data.time < 26)] #Data for general graph, not necessary to have loc
+    PT_data = PT_data.groupby(['group','cell','pre_post']).mean().reset_index()
+    
+    cm = 1/2.54
+    fig, ax = plt.subplots(1,2, figsize = (0.5*(18.3*cm), 3))
+    
+    sns.boxplot(data=data, x='group', y='norm_EPSC1_amplitude', fliersize=0, ax=ax[0], order=['pos','neg'], linewidth=0.5)
+    sns.stripplot(data=data, x='group', y='norm_EPSC1_amplitude', ax=ax[0], order=['pos','neg'], size=4, hue='group',
+                  hue_order=['pos','neg'], jitter=0.05, marker='^', edgecolor='black', color='white', linewidth=0.5)
+    sns.boxplot(data=PT_data, x='group', y='norm_EPSC1_amplitude', fliersize=0, ax=ax[1], order=['pos','neg'], linewidth=0.5)
+    sns.stripplot(data=PT_data, x='group', y='norm_EPSC1_amplitude', ax=ax[1], order=['pos','neg'], size=4, hue='group',
+                  hue_order=['pos','neg'], jitter=0.05, marker='^', edgecolor='black', color='white', linewidth=0.5)
     for a in ax.flatten():
         a.spines['top'].set_visible(False)
         a.spines['right'].set_visible(False)
-        a.set_ylabel('EPSC (%)')
-        a.set_ylim(0.3, 1.2)
-        #a.set_yticklabels([30,40,50,60,70,80,90,100,110,120])
-        
+        a.set_ylim(0.4, 2.0)
+        a.set_yticks([0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0])
+        a.set_yticklabels([40,60,80,100,120,140,160,180,200])
+    ax[0].set_ylabel('EPSC (%) (t=20-25 min)')
+    ax[1].set_ylabel(' ')
     ax[0].legend().set_visible(False)
     ax[1].legend().set_visible(False)
-    ax[0].set_xticklabels(['E+','E-','Flcls'])
-    ax[1].set_xticklabels(['AZ','CZ','PZ'])
-    ax[0].set_xlabel('EAAT4 Identity')
-    ax[1].set_xlabel('Region')
-
+    ax[0].set_xticklabels(['+','-'])
+    ax[1].set_xticklabels(['+','-'])
+    ax[0].set_xlabel('EAAT4')
+    ax[1].set_xlabel('EAAT4')
     fig.tight_layout()
-    fig.savefig(os.path.join(output_loc, "extendedLTDdata_wflocculus.png"), dpi = 1000)
-    return fig, ax
-
+    fig.savefig(os.path.join(output_loc, "extended_LTP_data.pdf"))
+    return
 
 def export_data(data):
     #for RMAnova
     post_data = data.loc[data.pre_post == 'post']
-    post_data = post_data.loc[post_data.time < 35]
+    post_data = post_data.loc[post_data.time < 36]
     
     a = np.arange(4,30,5)
     for i in a:
@@ -561,12 +566,12 @@ def export_data(data):
 
 if __name__ == "__main__":
     base_folder = "//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data"
-    data_loc = os.path.join(base_folder, "Data/LTD/Data")
-    meta_loc = os.path.join(base_folder, "Metadata/ltdmeta_select - Copy.xlsx")
+    data_loc = os.path.join(base_folder, "Data/LTP/PT")
+    meta_loc = os.path.join(base_folder, "Metadata/ltpmeta_PT_select.xlsx")
     output_loc = os.path.join(base_folder, "Analysis_tools/output/")
     plt.style.use('seaborn-paper')
     #color = ["#FFFFFF","#808080"] #white/grey
-    color = ["#5BE12D","#D24646"] #Original green/red
+    color = ["#5BE12D","#EC008C"] #Original green/red
     #color = ["#4DAF4A","#E41A1C"] #New green/red
     sns.set_palette(sns.color_palette(color), desat=1)
     #sns.set_palette('Set1',8,0.7)

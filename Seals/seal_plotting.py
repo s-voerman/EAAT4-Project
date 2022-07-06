@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import os
-from scipy.stats import levene, ttest_ind
+from scipy.stats import levene, ttest_ind, shapiro
 from scipy.stats import tstd
 
 plt.style.use('seaborn-paper')
@@ -78,8 +78,11 @@ def seal_stats():
     for v in vars:
         print(v, tstd(excel_df.loc[excel_df.group == "pos", v]), 'Z+ standard deviation')
         print(v, tstd(excel_df.loc[excel_df.group == "neg", v]), 'Z- standard deviation')
+        print(v, shapiro(excel_df.loc[excel_df.group == "pos", v]), 'Z+ SW')
+        print(v, shapiro(excel_df.loc[excel_df.group == "neg", v]), 'Z- SW')
         print(v, levene(excel_df.loc[excel_df.group == "pos", v], excel_df.loc[excel_df.group == "neg", v]))
         print(v, ttest_ind(excel_df.loc[excel_df.group == "pos", v], excel_df.loc[excel_df.group == "neg", v]), "\n")
+
  
     
 def domain_stats():
@@ -123,7 +126,7 @@ if __name__ == "__main__":
     meta_loc = os.path.join(base_folder, "Metadata/ltdmeta_select.xlsx")
     output_loc = os.path.join(base_folder, "Analysis_tools/output/")
     plt.style.use('seaborn-paper')
-    color = ["#5BE12D","#D24646"] 
+    color = ["#5BE12D","#EC008C"] #Original green/red
     sns.set_palette(sns.color_palette(color), desat=1)
     plt.rcParams['font.sans-serif'] = 'Arial'
     plt.rcParams['font.family'] = 'sans-serif'

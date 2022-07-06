@@ -22,7 +22,7 @@ def read_abf(file_loc):
     return data[:, 0], sr
 
 def example_trace():
-    os.chdir(mepsc_loc)
+    os.chdir(mipsc_loc)
     
     #LTD
     # neg_data_pre, sr = read_abf('stijn_120122 1-58.ABF')
@@ -47,12 +47,12 @@ def example_trace():
     # post_data,sr  = read_abf('stijn_060422 1-34.ABF')
     
     #mEPSC
-    pos_data, sr = read_abf('stijn_260121 3-14.ABF') 
-    neg_data, sr = read_abf('stijn_120320 1-3.ABF')
+    # pos_data, sr = read_abf('stijn_260121 3-14.ABF') 
+    # neg_data, sr = read_abf('stijn_120320 1-3.ABF')
     
     # #mIPSC
-    #pos_data, sr = read_abf('laura_271020 5-27.ABF') 
-    #neg_data, sr = read_abf('laura_100920 5-19.ABF')
+    pos_data, sr = read_abf('laura_271020 5-27.ABF') 
+    neg_data, sr = read_abf('laura_100920 5-19.ABF')
     
     #Plot
     cm = 1/2.54
@@ -60,15 +60,15 @@ def example_trace():
     plt.rcParams['font.family'] = 'sans-serif'
     fonts = {"font.size":7, "axes.labelsize":7, "ytick.labelsize":7, "xtick.labelsize":7}
     plt.rcParams.update(fonts)
-    fig, ax = plt.subplots(figsize=(18.3*cm,4))
+    fig, ax = plt.subplots(1,2, dpi=300)
     
-    ax.plot(pos_data[0:250000])
-    #ax.plot(neg_data[0:1500000])
+    ax[0].plot(pos_data[0:50000])
+    ax[1].plot(neg_data[0:50000])
  
 
     
     fig.tight_layout()
-    fig.savefig(os.path.join(output_loc, 'example_trace.png'))
+    fig.savefig(os.path.join(output_loc, 'mipsc_example_trace.png'), dpi=300)
 
     return fig, ax
 

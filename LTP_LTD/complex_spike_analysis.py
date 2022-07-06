@@ -6,11 +6,11 @@ import pandas as pd
 from neo.rawio import AxonRawIO
 from numpy import trapz
 from scipy.stats import levene, ttest_ind
-from scipy.stats import tstd, sem
+from scipy.stats import tstd, sem, shapiro, mannwhitneyu
 
 base_folder = "//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data"
 data_loc = os.path.join(base_folder, "Data/LTD/Data")
-meta_loc = os.path.join(base_folder, "Metadata/ltdmeta_select.xlsx")
+meta_loc = os.path.join(base_folder, "Metadata/ltdmeta_select_strict.xlsx")
 output_loc = os.path.join(base_folder, "Analysis_tools/output/")
 plt.style.use('seaborn-paper')
 sns.set_palette('Set1',8,0.7)
@@ -52,9 +52,9 @@ def complex_spikes():
         Area = []
         for start in window:
             baseline = np.min(data[int(0.3 * sr)+start:int(0.4 * sr)+start])
-            cs_data = data[int(0.22 * sr)+start:int(0.24 * sr)+start]
+            cs_data = data[int(0.20 * sr)+start:int(0.24 * sr)+start]
             cs_data = cs_data- baseline
-            x_data = np.arange(0,20,0.02)
+            x_data = np.arange(0,40,0.02)
             
             area = trapz(cs_data, x_data)
             Area.append(area)
@@ -75,7 +75,7 @@ def check_cells():
     Area = []
     for start in window:
         baseline = np.min(data[int(0.3 * sr)+start:int(0.4 * sr)+start])
-        cs_data = data[int(0.22 * sr)+start:int(0.23 * sr)+start]
+        cs_data = data[int(0.20 * sr)+start:int(0.25 * sr)+start]
         cs_data = cs_data- baseline
         x_data = np.arange(0,10,0.02)
         
@@ -145,6 +145,8 @@ def stats(cs_meta):
         pos_sem = sem(pos_data.loc[:,v])
         neg_sd = tstd(neg_data.loc[:,v])
         pos_sd = tstd(pos_data.loc[:,v])
+        pos_sh = shapiro(pos_data.loc[:,v])
+        neg_sh = shapiro(neg_data.loc[:,v])
     
         meta['pos_mean'] = pos_mean
         meta['neg_mean'] = neg_mean
@@ -152,10 +154,13 @@ def stats(cs_meta):
         meta['neg_sem'] = neg_sem
         meta['pos_sd'] = pos_sd
         meta['neg_sd'] = neg_sd
+        meta['pos_Sh-W'] = pos_sh[1]
+        meta['neg_Sh-W'] = neg_sh[1]
         print(v, tstd(cs_meta.loc[cs_meta.group == "pos", v]), 'Z+ standard deviation')
         print(v, tstd(cs_meta.loc[cs_meta.group == "neg", v]), 'Z- standard deviation')
         print(v, levene(cs_meta.loc[cs_meta.group == "pos", v], cs_meta.loc[cs_meta.group == "neg", v]))
         print(v, ttest_ind(cs_meta.loc[cs_meta.group == "pos", v], cs_meta.loc[cs_meta.group == "neg", v]), "\n")
+        print(v, mannwhitneyu(cs_meta.loc[cs_meta.group == "pos", v], cs_meta.loc[cs_meta.group == "neg", v]), "\n")
     stat_df = pd.DataFrame([meta])
     stat_df.to_excel(os.path.join(output_loc, 'LTD ' + str(v) + '.xlsx'))
     return stat_df
@@ -163,7 +168,7 @@ def stats(cs_meta):
 
 if __name__ == "__main__":
     plt.style.use('seaborn-paper')
-    color = ["#5BE12D","#D24646"] #Original green/red
+    color = ["#5BE12D","#EC008C"] #Original green/red
     sns.set_palette(sns.color_palette(color), desat=1)
     plt.rcParams['font.sans-serif'] = 'Arial'
     plt.rcParams['font.family'] = 'sans-serif'
