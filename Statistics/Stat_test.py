@@ -4,20 +4,24 @@ import numpy as np
 from scipy.stats import levene, ttest_ind, tstd, sem, shapiro, mannwhitneyu
 from itertools import combinations
 
-#Messing around with some statistics for full automation
+#Essentially every function in this program work in a similar way
+#The initial step is to grab the correct data
+#A combination is created between the groups (pre_pos/pre_neg/post_pos/post_neg) and the variables that you want to analyze
+#Every iteration grabs the mean, sderr, and sd of the variable and positive/negative groups, and appends it into the output dataframe
+#The functions specific to certain cerebellar zones work the same way, but use different groups per zone
 
 def plasticity_stats(data, output_loc):
-    data = data.loc[data.time > -6]
-    stat_df = pd.DataFrame()
-    all_data = data.groupby(['group','cell','pre_post']).median().reset_index() 
-    for i, x in all_data.iterrows():
+    data = data.loc[data.time > -6] #data only from the normalized period
+    stat_df = pd.DataFrame() #empty frame for output
+    all_data = data.groupby(['group','cell','pre_post']).median().reset_index()  #medians per cell
+    for i, x in all_data.iterrows(): #adds an extra column which indexes it according to pre_post / group
         all_data['INDEX'] = all_data['pre_post'] + '_' + all_data['group']
     
     vars = ['norm_EPSC1_amplitude', 'norm_PPR', 'PPR','r_cap', 'norm_r_cap','r_membrane', 
-            'norm_r_membrane', 'holding', 'norm_holding']
-    groups = ['pre_pos','pre_neg','post_pos','post_neg']
-    cc = list(combinations(groups,2))
-    for i in range(len(cc)):
+            'norm_r_membrane', 'holding', 'norm_holding'] #variables that you want to analyze
+    groups = ['pre_pos','pre_neg','post_pos','post_neg'] #all the groups you want to analyze
+    cc = list(combinations(groups,2)) #combinations of the groups to compare
+    for i in range(len(cc)): #nested loop that will determine the data for the two relevant groups, and determines it's values
         a = all_data.loc[all_data.INDEX == cc[i][0]] #First group in pairing
         b = all_data.loc[all_data.INDEX == cc[i][1]] #Second group in pairing
         for v in vars:
@@ -78,37 +82,6 @@ def plasticity_stats(data, output_loc):
     
     stat_df.to_excel(os.path.join(output_loc, 'LTP_PT_statistics.xlsx'))
     return stat_df
-    
-def descriptives_only(data):
-    data = data.loc[data.time >-6]
-    all_data = data.groupby(['group','cell','pre_post']).median().reset_index() 
-    
-    stat_df = pd.DataFrame()
-    vars = ['norm_EPSC1_amplitude', 'norm_PPR', 'PPR','r_cap','r_membrane', 'holding']
-    groups = ['pos', 'neg']
-    pre_post = ['pre', 'post']
-    for z in groups:
-        for p in pre_post: 
-            y = all_data.loc[(all_data.group == z) & (all_data.pre_post == p)]
-            for v in vars:
-                temp_df = pd.DataFrame()
-                avg, ser, std = [], [], []
-                mean = np.mean(y.loc[:,v])
-                sderr = sem(y.loc[:,v])
-                sd = tstd(y.loc[:,v])
-        
-                avg.append(mean)
-                ser.append(sderr)
-                std.append(sd)
-                temp_df.loc[:,'Mean'] = pd.Series(avg)
-                temp_df.loc[:,'SEM'] = pd.Series(ser)
-                temp_df.loc[:,'SD'] = pd.Series(std)
-                temp_df['group'] = str(z)
-                temp_df['pre_post'] = str(p)
-                temp_df['variable'] = str(v)
-                stat_df = stat_df.append(temp_df)
-
-    return stat_df
 
 def plasticity_stats_zones(data, output_loc):
     data = data.loc[(data.time > 19) & (data.time < 25)] #for this analysis I only need data from 20-25 mins
@@ -145,7 +118,6 @@ def plasticity_stats_zones(data, output_loc):
                 sh2 = sh2[1]
             except:
                 pass
-            
             
             avg1.append(mean1)
             avg2.append(mean2)
