@@ -15,14 +15,7 @@ def plcb4_correlation():
     eaat4['norm_gray_value'] = eaat4.Gray_Value / np.mean(eaat4.Gray_Value)
     aldoc['norm_gray_value'] = aldoc.Gray_Value / np.mean(aldoc.Gray_Value)
     plcb4['norm_gray_value'] = plcb4.Gray_Value / np.mean(plcb4.Gray_Value)
-    
-    # x = eaat4['Distance_(microns)']
-    # y = eaat4.norm_gray_value
-    # X_Y_Spline = make_interp_spline(x, y)
-    # X_ = np.linspace(x.min(),x.max(),150)
-    # Y_ = X_Y_Spline(X_)
-    # plt.plot(X_,Y_)
-    
+     
     cm=1/2.54
     fig, ax = plt.subplots(3,1, figsize=(9.15*cm, 5 *cm))
     for a in ax.flatten():
@@ -57,7 +50,6 @@ def plcb4_correlation():
     #fig.tight_layout()
     fig.savefig(os.path.join(output_loc, 'expression.pdf'))
     return 
-
     
 if __name__ == "__main__":
     base_folder = "//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data"
