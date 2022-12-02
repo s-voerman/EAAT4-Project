@@ -6,3 +6,5 @@ The excel sheets provided as supplementary data contain data averaged per minute
 can then be used to graph.
 
 complex_spike_analysis.py is redundant, as it is now integrated into base.py, however it gives a far clearer view of how the analysis of the CS works.  
+
+Helper_functions contains some basic functions used in base.py.
