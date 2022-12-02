@@ -19,9 +19,10 @@ pd.options.display.max_rows = 130
 #Make sure the excel sheets are in the correct folder.
 def read_supplements():
     ltd = pd.read_excel('ltd_data.xlsx')
+    ltd_pairs = pd.read_excel('ltd_pairs.xlsx')
     ltp = pd.read_excel('ltp_data.xlsx')
     ltp_pt = pd.read_excel('ltp_data_pt.xlsx')
-    return ltd, ltp, ltp_pt
+    return ltd, ltd_pairs, ltp, ltp_pt
 
 class process_single_cell(object):
     def __init__(self, file_loc, output_loc, cell, group, pre, ind, post, row, lobule, confirmed, domain):
