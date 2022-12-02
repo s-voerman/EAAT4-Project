@@ -7,6 +7,16 @@ from scipy.stats import levene, ttest_ind
 from scipy.stats import linregress
 from scipy.stats import tstd
 
+#Function for reading supplementary data.
+#Either change the code below to reflect the names of the downloaded excel sheets, or change the names of the excel sheets to the code below.
+#Make sure the excel files are in the correct directory.
+def read_supplements():
+    epsc_cells = pd.read_excel('epsc_excelwithcelldata.xlsx') 
+    epsc_events = pd.read_excel('epsc_excelwitheventdata.xlsx')
+    ipsc_cells = pd.read_excel('ipsc_excelwithcelldata.xlsx') 
+    ipsc_events = pd.read_excel('ipsc_excelwitheventdata.xlsx')
+    return epsc_cells, epsc_events, ipsc_cells, ipsc_events                            
+                             
 ########### EPSCs #################################################################################################################
 
 def EPSC_meta():
