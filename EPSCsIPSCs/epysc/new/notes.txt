@@ -1,3 +1,0 @@
-if:
-fit tau very high (e6) or negative, remove.
-low tau pams -> <0.3
