@@ -9,12 +9,19 @@ import helper_functions as hf
 import pandas as pd
 from scipy.stats import levene, ttest_ind, tstd, sem, pearsonr
 
-#A problem is that in some datasets, CS occurs at different timings, for now Im changing this manually, but really not an ideal solution
-
 plt.ion()
 pd.options.display.max_columns = 20
 pd.options.display.width = 160
 pd.options.display.max_rows = 130
+
+#Function for reading supplemental data.
+#Make sure the excel sheets are named according to the code below, or change the code to reflect the names of the excel sheets.
+#Make sure the excel sheets are in the correct folder.
+def read_supplements():
+    ltd = pd.read_excel('ltd_data.xlsx')
+    ltp = pd.read_excel('ltp_data.xlsx')
+    ltp_pt = pd.read_excel('ltp_data_pt.xlsx')
+    return ltd, ltp, ltp_pt
 
 class process_single_cell(object):
     def __init__(self, file_loc, output_loc, cell, group, pre, ind, post, row, lobule, confirmed, domain):
@@ -714,8 +721,6 @@ def cs_correlation2(data):
     fig.tight_layout()
     fig.savefig(os.path.join(output_loc, 'LTD_PPR.pdf'))
     return
-
-
 
 def cs_stats(data):
     post_data = data.loc[data.pre_post == 'post']
