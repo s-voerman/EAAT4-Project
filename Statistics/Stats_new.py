@@ -4,8 +4,6 @@ import numpy as np
 from scipy.stats import levene, ttest_ind, tstd, sem, shapiro, mannwhitneyu
 from itertools import combinations
 
-#Messing around with some statistics for full automation
-
 def plasticity_stats(data, output_loc):
     data = data.loc[data.time > -6]
     stat_df = pd.DataFrame()
