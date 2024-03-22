@@ -59,7 +59,7 @@ def plcb4_correlation():
     return 
     
 if __name__ == "__main__":
-    base_folder = "//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data"
+    base_folder = ""
     data_loc = os.path.join(base_folder, "Data")
     output_loc = os.path.join(base_folder, "Analysis_tools/output/")
     plt.style.use('seaborn-paper')
