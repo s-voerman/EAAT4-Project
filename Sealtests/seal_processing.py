@@ -19,7 +19,7 @@ def read_abf(file_loc):
 
 #Reads a masterfile that contains information about cells, adapts cellname to full filename 
 def read_masterfile():
-    meta_loc = '//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Metadata'
+    meta_loc = ''
     os.chdir(meta_loc)
     ipsc_df = pd.read_excel('mipsc_metafile.xlsx') 
     epsc_df = pd.read_excel('mepsc_metafile.xlsx')
@@ -63,7 +63,7 @@ def obtain_data():
     ipsc_file_loc = master_sheet.file_loc 
     epsc_file_loc = master_sheet.file_loc
     
-    ABF_loc = '//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/mIPSCs/Combined/seals/abf' 
+    ABF_loc = '' 
     os.chdir(ABF_loc) 
     ipsc_data = pd.DataFrame()
     for i in ipsc_file_loc:
@@ -83,8 +83,8 @@ def analyse_data():
     ipsc_df, epsc_df = read_masterfile()
     sr = 50000
     
-    ipsc_loc = '//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/mIPSCs/Combined/seals/abf'
-    epsc_loc = '//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/mEPSCs/Combined/seals/abf'
+    ipsc_loc = ''
+    epsc_loc = ''
  
     baseline_start   = int(0.65 * sr)
     baseline_end     = int(0.7 * sr)
@@ -225,7 +225,7 @@ def exclusion():
     
 def export_data():
     clean_data = exclusion()
-    writer = pd.ExcelWriter('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Analysis_tools/output/seal_data_combined.xlsx')
+    writer = pd.ExcelWriter('')
     clean_data.to_excel(writer)
     writer.save()
     
