@@ -22,7 +22,7 @@ plt.rcParams.update(fonts)
 
 def plot_sealdata():
     #Combined data
-    plot_data = pd.read_excel('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/seal_data_combined.xlsx')
+    plot_data = pd.read_excel('')
     plot_data.loc[:,'Ratio (Rs/Ri)'] = (plot_data.Rs / plot_data.Ri) *100
     
     cm=1/2.54
@@ -51,7 +51,7 @@ def plot_sealdata():
     return fig, ax
         
 def lobule_plot():
-    plot_data = pd.read_excel('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/seal_data_combined.xlsx')
+    plot_data = pd.read_excel('')
     
     cm=1/2.54
     fig, ax = plt.subplots(dpi=300, figsize=(11.4 *cm,8.3*cm))
@@ -72,7 +72,7 @@ def lobule_plot():
 #STATS
 
 def seal_stats():
-    excel_df = pd.read_excel('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/seal_data_combined.xlsx')
+    excel_df = pd.read_excel('')
     
     vars        = ['Rm','Cm','Tau']
     for v in vars:
@@ -86,7 +86,7 @@ def seal_stats():
  
     
 def domain_stats():
-    excel_df = pd.read_excel('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/seal_data_combined.xlsx')
+    excel_df = pd.read_excel('')
     
     vars = ['Rs','Rm','cslow','holding','Ratio (Rs/Ri)','Cm']
     for v in vars:
@@ -96,7 +96,7 @@ def domain_stats():
         print(v, ttest_ind(excel_df.loc[excel_df.domain == 0, v], excel_df.loc[excel_df.domain == 2, v]), "\n")
 
 def zebrin_stats():
-    excel_df = pd.read_excel('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/seal_data_combined.xlsx')
+    excel_df = pd.read_excel('')
     AZ_df = excel_df.loc[excel_df.domain == 0]
     CZ_df = excel_df.loc[excel_df.domain == 1]
     PZ_df = excel_df.loc[excel_df.domain == 2]
@@ -121,7 +121,7 @@ def zebrin_stats():
     
     
 if __name__ == "__main__":
-    base_folder = "//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data"
+    base_folder = ""
     data_loc = os.path.join(base_folder, "Data/LTD/Data")
     meta_loc = os.path.join(base_folder, "Metadata/ltdmeta_select.xlsx")
     output_loc = os.path.join(base_folder, "Analysis_tools/output/")
