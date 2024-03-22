@@ -8,7 +8,7 @@ from numpy import trapz
 from scipy.stats import levene, ttest_ind
 from scipy.stats import tstd, sem, shapiro, mannwhitneyu
 
-base_folder = "//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data"
+base_folder = ""
 data_loc = os.path.join(base_folder, "Data/LTD/Data")
 meta_loc = os.path.join(base_folder, "Metadata/ltdmeta_select_strict - Pairs.xlsx")
 output_loc = os.path.join(base_folder, "Analysis_tools/output/")
