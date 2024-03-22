@@ -20,7 +20,7 @@ def read_supplements():
 ########### EPSCs #################################################################################################################
 
 def EPSC_meta():
-    os.chdir('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Metadata') #Change this to the folder with the relevant metafile
+    os.chdir('') #Change this to the folder with the relevant metafile
     meta = pd.read_excel('mepsc_metafile.xlsx')
     meta['filename'] = [" ".join([x, "-".join([str(y),str(z)])]) for x,y,z in zip(meta.name, meta.cell, meta.epsc)]
     vars = ['II','III','IV-V'] #AZ
@@ -36,7 +36,7 @@ def EPSC_meta():
 
 def EPSC_reader():
     meta = EPSC_meta()
-    os.chdir('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/mEPSCs/Combined/excel/clean') #Directory that contains EPSC !Excel! files
+    os.chdir('') #Directory that contains EPSC !Excel! files
     output_df = pd.DataFrame()
     dirlist = os.listdir() 
     
@@ -116,7 +116,7 @@ def export_EPSC_data():
 ####### IPSCs ####################################################################################################################
 
 def IPSC_meta():
-    os.chdir('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Metadata') #Change this to the folder with the relevant metafile
+    os.chdir('') #Change this to the folder with the relevant metafile
     meta = pd.read_excel('mipsc_metafile.xlsx')
     meta['filename'] = [" ".join([x, "-".join([str(y),str(z)])]) for x,y,z in zip(meta.name, meta.cell, meta.ipsc)]
     
@@ -134,7 +134,7 @@ def IPSC_meta():
 
 def IPSC_reader():
     meta = IPSC_meta()
-    os.chdir('//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data/Data/mIPSCs/Combined/excel/clean') #Directory that contains IPSC !Excel! files
+    os.chdir('') #Directory that contains IPSC !Excel! files
     output_df = pd.DataFrame()
     dirlist = os.listdir() 
     
@@ -667,7 +667,7 @@ def extract(data):
     return
     
 if __name__ == "__main__":
-    base_folder = "//storage/v/vcl15/ddata/NEUW/dezeeuw/Stijn Voerman/Paper_data"
+    base_folder = ""
     output_loc = os.path.join(base_folder, "Analysis_tools/output/")
     plt.style.use('seaborn-paper')
     color = ["#5BE12D","#EC008C"] #Original green/red
